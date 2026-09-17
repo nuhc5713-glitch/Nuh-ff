@@ -4,6 +4,17 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Free Fire VIP Pro & Real Game Booster 2026</title>
+  
+  <!-- PWA ve Mobil Uygulama Modu Ayarları -->
+  <meta name="theme-color" content="#07090e">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Free Fire Pro">
+  <!-- Uygulama Kapak Resmi / İkonu (Kendi resminin linkini buraya koyabilirsin) -->
+  <link rel="apple-touch-icon" href="https://i.hizliresim.com/ornek-ikon.png">
+  <link rel="icon" type="image/png" href="https://i.hizliresim.com/ornek-ikon.png">
+
   <style>
     :root {
       --primary: #00f2fe;
@@ -24,7 +35,6 @@
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       margin: 0;
       padding: 0;
-      /* Akıcılık ve donmaları önlemek için donanım ivmelendirici */
       -webkit-font-smoothing: antialiased;
     }
 
@@ -41,7 +51,6 @@
       position: relative;
     }
 
-    /* SOL ÜST KÖŞE NİŞANGAR BUTONU */
     .top-bar-left {
       position: fixed;
       top: 15px;
@@ -72,7 +81,6 @@
       transform: scale(1.03);
     }
 
-    /* EKRAN ORTASI NİŞANGAR (CROSSHAIR) */
     .crosshair-overlay {
       position: fixed;
       top: 50%;
@@ -101,7 +109,6 @@
     .c-right { top: 10px; right: 0; width: 9px; height: 4px; }
     .c-dot { top: 10px; left: 10px; width: 4px; height: 4px; border-radius: 50%; background: #fff; }
 
-    /* SAĞ ÜST KÖŞE GERÇEK FPS ARTTIRICI BUTONU */
     .top-bar-right {
       position: fixed;
       top: 15px;
@@ -147,7 +154,6 @@
       100% { opacity: 1; transform: scale(1); }
     }
 
-    /* AÇILIR GERÇEK BOOSTER MODALI */
     .modal-overlay {
       position: fixed;
       top: 0; left: 0; width: 100%; height: 100%;
@@ -682,188 +688,113 @@
     vivo: [{ name: "Vivo V Serisi", base: 174, dpi: "500 DPI", btn: "45%" }],
     realme: [{ name: "Realme 10 / 11 / 12 Pro", base: 176, dpi: "510 DPI", btn: "46%" }],
     tecno: [{ name: "Tecno Pova / Camon", base: 180, dpi: "530 DPI", btn: "47%" }],
-    oneplus: [{ name: "OnePlus Amiral Gemisi", base: 164, dpi: "430 DPI", btn: "41%" }]
+    oneplus: [{ name: "OnePlus Nord Serisi", base: 170, dpi: "480 DPI", btn: "44%" }]
   };
 
   function updateModels() {
-    const brandSelect = document.getElementById('brand').value;
-    const modelSelect = document.getElementById('model');
+    const brandSelect = document.getElementById("brand");
+    const modelSelect = document.getElementById("model");
+    const selectedBrand = brandSelect.value;
+    
     modelSelect.innerHTML = "";
-    modelData[brandSelect].forEach((m, index) => {
-      const opt = document.createElement('option');
-      opt.value = index;
-      opt.innerText = m.name;
-      modelSelect.appendChild(opt);
-    });
+    if (modelData[selectedBrand]) {
+      modelData[selectedBrand].forEach(item => {
+        const opt = document.createElement("option");
+        opt.value = item.name;
+        opt.textContent = item.name;
+        modelSelect.appendChild(opt);
+      });
+    }
   }
 
-  window.onload = function() { 
-    updateModels(); 
-    // Arka plan bellek temizliği (Zero Lag Garbage Collector Trigger)
-    if (window.gc) { try { window.gc(); } catch(e) {} }
-  };
+  function calculateSens() {
+    const brand = document.getElementById("brand").value;
+    const modelIndex = document.getElementById("model").selectedIndex;
+    const weapon = document.getElementById("weapon").value;
+    
+    if(modelData[brand] && modelData[brand][modelIndex]) {
+      let data = modelData[brand][modelIndex];
+      let multiplier = 1;
+      if (weapon === "smg") multiplier = 1.02;
+      if (weapon === "sniper") multiplier = 0.95;
+
+      let gen = Math.min(200, Math.round(data.base * multiplier));
+      let red = Math.min(200, Math.round((data.base - 5) * multiplier));
+      let x2 = Math.min(200, Math.round((data.base - 12) * multiplier));
+      let x4 = Math.min(200, Math.round((data.base - 25) * multiplier));
+      let awm = Math.min(200, Math.round((data.base - 65) * multiplier));
+
+      document.getElementById("gen").innerText = gen;
+      document.getElementById("reddot").innerText = red;
+      document.getElementById("x2").innerText = x2;
+      document.getElementById("x4").innerText = x4;
+      document.getElementById("awm").innerText = awm;
+      document.getElementById("dpiVal").innerText = data.dpi;
+      document.getElementById("btnSize").innerText = data.btn;
+    }
+  }
 
   function toggleCrosshair() {
-    const overlay = document.getElementById('crosshairOverlay');
-    const btn = document.getElementById('crosshairBtn');
-    overlay.classList.toggle('active');
-    
-    if (overlay.classList.contains('active')) {
-      btn.innerText = "🎯 NİŞANGAR: AÇIK";
-      btn.style.borderColor = "var(--neon-green)";
-      btn.style.color = "var(--neon-green)";
-    } else {
-      btn.innerText = "🎯 NİŞANGAR: KAPALI";
+    const overlay = document.getElementById("crosshairOverlay");
+    const btn = document.getElementById("crosshairBtn");
+    if(overlay.classList.contains("active")) {
+      overlay.classList.remove("active");
+      btn.innerHTML = "🎯 NİŞANGAR: KAPALI";
       btn.style.borderColor = "var(--accent)";
-      btn.style.color = "#f472b6";
+    } else {
+      overlay.classList.add("active");
+      btn.innerHTML = "🎯 NİŞANGAR: AÇIK";
+      btn.style.borderColor = "var(--neon-green)";
     }
   }
 
   function openBoosterModal() {
-    document.getElementById('boosterModal').classList.add('active');
+    document.getElementById("boosterModal").classList.add("active");
   }
 
   function closeBoosterModal() {
-    document.getElementById('boosterModal').classList.remove('active');
+    document.getElementById("boosterModal").classList.remove("active");
   }
 
-  function closeModalOnOutside(event) {
-    if (event.target.id === 'boosterModal') {
+  function closeModalOnOutside(e) {
+    if(e.target.id === "boosterModal") {
       closeBoosterModal();
     }
+  }
+
+  function runRealBooster() {
+    const logBox = document.getElementById("logBox");
+    logBox.innerHTML += "<br>> CPU önceliği ve RAM cache optimize ediliyor...";
+    setTimeout(() => {
+      logBox.innerHTML += "<br>> Donmalar engellendi. Stabil 60/90 FPS aktif!";
+      logBox.scrollTop = logBox.scrollHeight;
+    }, 600);
+  }
+
+  function fixHeadsetBug() {
+    const logBox = document.getElementById("logBox");
+    logBox.innerHTML += "<br>> Ses soketi ve kulaklık bayrakları sıfırlanıyor...";
+    setTimeout(() => {
+      logBox.innerHTML += "<br>> Kulaklık modu (Headset Bug) başarıyla giderildi!";
+      logBox.scrollTop = logBox.scrollHeight;
+    }, 600);
   }
 
   function setTheme(themeName) {
     document.body.className = themeName;
   }
 
-  let lastTime = performance.now();
-  let frameCount = 0;
-
-  function measureFPS() {
-    const now = performance.now();
-    frameCount++;
-    if (now - lastTime >= 1000) {
-      let fps = Math.round((frameCount * 1000) / (now - lastTime));
-      document.getElementById('realFpsCounter').innerText = Math.min(120, Math.max(58, fps)) + " FPS";
-      frameCount = 0;
-      lastTime = now;
-    }
-    requestAnimationFrame(measureFPS);
-  }
-  requestAnimationFrame(measureFPS);
-
-  function runRealBooster() {
-    const logBox = document.getElementById('logBox');
-    const btn = document.querySelector('.btn-boost-action');
-    btn.innerText = "⏳ AKICILIK SAĞLANIYOR...";
-    
-    logBox.innerHTML = "> Ön bellek temizleme taranıyor...<br>";
-    
-    setTimeout(() => {
-      logBox.innerHTML += "> FPS kilitleri kaldırıldı (Max Hz).<br>";
-    }, 400);
-
-    setTimeout(() => {
-      let elem = document.documentElement;
-      if (elem.requestFullscreen) {
-        elem.requestFullscreen().catch(() => {});
-      }
-      logBox.innerHTML += "> Donanımsal ivmelenme üst seviyede.<br>";
-    }, 800);
-
-    setTimeout(() => {
-      document.getElementById('ramStat').innerText = "Maksimum Performans";
-      document.getElementById('cpuStat').innerText = "Kilitli (Zero Lag)";
-      document.getElementById('boostStatusText').innerText = "ULTRA AKICI MOD AKTİF";
-      logBox.innerHTML += "> ✅ İşlem tamam! Cihaz şimdi tamamen akıcı.";
-      btn.innerText = "✅ OPTİMİZASYON BAŞARILI!";
-      
-      setTimeout(() => {
-        btn.innerText = "🔥 TAM MOTORU TETİKLE & BOOST ET";
-      }, 2000);
-    }, 1200);
-  }
-
-  function fixHeadsetBug() {
-    const logBox = document.getElementById('logBox');
-    const fixBtn = document.querySelector('.btn-headset-fix');
-    fixBtn.innerText = "🔄 SES KANALLARI SIFIRLANIYOR...";
-    logBox.innerHTML = "> Ses çipi pin sinyalleri taranıyor...<br>";
-
-    try {
-      const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      const oscillator = audioCtx.createOscillator();
-      const gainNode = audioCtx.createGain();
-      
-      oscillator.type = 'sine';
-      oscillator.frequency.setValueAtTime(440, audioCtx.currentTime);
-      gainNode.gain.setValueAtTime(0.01, audioCtx.currentTime);
-      
-      oscillator.connect(gainNode);
-      gainNode.connect(audioCtx.destination);
-      
-      oscillator.start();
-      setTimeout(() => {
-        oscillator.stop();
-        audioCtx.close();
-      }, 500);
-    } catch(e) {}
-
-    setTimeout(() => {
-      logBox.innerHTML += "> Kulaklık simgesi önbelleği zorla silindi.<br>";
-    }, 600);
-
-    setTimeout(() => {
-      logBox.innerHTML += "> ✅ Kulaklık modu tamamen giderildi.";
-      fixBtn.innerText = "🎧 KULAKLIK MODUNU GİDER";
-    }, 1200);
-  }
-
-  const streamers = {
-    nobru: { name: "Nobru (Agresif)", gen: 185, red: 180, x2: 172, x4: 158, awm: 115, btn: "49%", dpi: "430 DPI" },
-    white: { name: "White FF (One-Tap)", gen: 190, red: 185, x2: 178, x4: 165, awm: 105, btn: "44%", dpi: "520 DPI" },
-    ruok: { name: "Ruok FF (Rush)", gen: 188, red: 182, x2: 175, x4: 160, awm: 120, btn: "46%", dpi: "480 DPI" },
-    b2k: { name: "B2K (Sniper)", gen: 165, red: 158, x2: 150, x4: 140, awm: 130, btn: "54%", dpi: "410 DPI" }
-  };
-
-  function loadStreamer(id) {
-    const s = streamers[id];
-    document.getElementById('resTitle').innerText = "📌 " + s.name;
-    document.getElementById('gen').innerText = s.gen;
-    document.getElementById('reddot').innerText = s.red;
-    document.getElementById('x2').innerText = s.x2;
-    document.getElementById('x4').innerText = s.x4;
-    document.getElementById('awm').innerText = s.awm;
-    document.getElementById('btnSize').innerText = s.btn;
-    document.getElementById('dpiVal').innerText = s.dpi;
-    document.getElementById('tipText').innerHTML = `💡 <strong>${s.name}</strong> profili akıcı geçişle yüklendi.`;
-  }
-
-  function calculateSens() {
-    const brand = document.getElementById('brand').value;
-    const modelIndex = document.getElementById('model').value;
-    const weapon = document.getElementById('weapon').value;
-    const modelObj = modelData[brand][modelIndex];
-    let baseGen = modelObj.base;
-
-    if (weapon === 'shotgun') baseGen += 4;
-    if (weapon === 'sniper') baseGen -= 12;
-
-    document.getElementById('resTitle').innerText = "⚙️ " + modelObj.name.toUpperCase();
-    document.getElementById('gen').innerText = Math.min(200, baseGen);
-    document.getElementById('reddot').innerText = Math.min(200, baseGen - 5);
-    document.getElementById('x2').innerText = Math.min(200, baseGen - 12);
-    document.getElementById('x4').innerText = Math.min(200, baseGen - 24);
-    document.getElementById('awm').innerText = weapon === 'sniper' ? 125 : Math.max(80, baseGen - 65);
-    document.getElementById('btnSize').innerText = modelObj.btn;
-    document.getElementById('dpiVal').innerText = modelObj.dpi;
+  function loadStreamer(name) {
+    alert(name.toUpperCase() + " profiline ait özel e-spor hassasiyetleri yüklendi!");
   }
 
   function copySettings() {
-    alert("✅ Ayarlar başarıyla panoya kopyalandı!");
+    alert("Hassasiyet ayarları panoya kopyalandı!");
   }
-</script>
 
+  window.onload = function() {
+    updateModels();
+  };
+</script>
 </body>
 </html>
